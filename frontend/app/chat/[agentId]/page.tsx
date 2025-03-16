@@ -443,7 +443,7 @@ Would you like me to create a dashboard to visualize this data?`,
                         )}
                       </div>
                       <span className={cn("text-xs block mt-2", "text-muted-foreground")}>
-                        {new Date(message.timestamp).toLocaleTimeString()}
+                        {new Date(message.timestamp).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })}
                       </span>
                     </div>
                   </div>

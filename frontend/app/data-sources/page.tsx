@@ -1,7 +1,6 @@
 "use client"
 
 import { useState } from "react"
-import { DashboardLayout } from "@/components/dashboard-layout"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -23,6 +22,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { cn } from "@/lib/utils"
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { DashboardLayout } from "@/components/dashboard-layout"
 
 interface DataSource {
   id: string
@@ -250,66 +250,91 @@ export default function DataSourcesPage() {
         <div className="flex justify-end items-center">
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-              <Button variant="default" className="h-9 bg-[#6366f1] hover:bg-[#4f46e5]">
-                <PlusIcon className="h-4 w-4 mr-2" />
-                Add Data Source
+              <Button className="bg-[#4F46E5] hover:bg-[#4338CA]">
+                <PlusIcon className="h-4 w-4 mr-2" /> Add Data Source
               </Button>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className="sm:max-w-[425px]">
               <DialogHeader>
-                <DialogTitle>Add Data Source</DialogTitle>
+                <DialogTitle>Add New Data Source</DialogTitle>
               </DialogHeader>
-              <div className="space-y-4 py-4">
-                <div className="space-y-2">
-                  <Label htmlFor="name">Source Name</Label>
+              <div className="grid gap-4 py-4">
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="name" className="text-right">
+                    Name
+                  </Label>
                   <Input
                     id="name"
                     value={newSource.name}
                     onChange={(e) => setNewSource({ ...newSource, name: e.target.value })}
+                    className="col-span-3"
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="type">Source Type</Label>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button variant="outline" role="combobox" aria-expanded={open} className="w-full justify-between">
-                        {newSource.type
-                          ? dataSourceTypes.find((type) => type.value === newSource.type)?.label
-                          : "Select type..."}
-                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
-                      <Command>
-                        <CommandInput placeholder="Search data source type..." />
-                        <CommandList>
-                          <CommandEmpty>No data source type found.</CommandEmpty>
-                          <CommandGroup className="max-h-[300px] overflow-y-auto">
-                            {dataSourceTypes.map((type) => (
-                              <CommandItem
-                                key={type.value}
-                                value={type.value}
-                                onSelect={(currentValue) => {
-                                  setNewSource({ ...newSource, type: currentValue })
-                                }}
-                              >
-                                <Check
-                                  className={cn(
-                                    "mr-2 h-4 w-4",
-                                    newSource.type === type.value ? "opacity-100" : "opacity-0",
-                                  )}
-                                />
-                                {type.label}
-                              </CommandItem>
-                            ))}
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="type" className="text-right">
+                    Type
+                  </Label>
+                  <div className="col-span-3">
+                    <Popover open={open} onOpenChange={setOpen}>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          role="combobox"
+                          aria-expanded={open}
+                          className="w-full justify-between"
+                        >
+                          {newSource.type
+                            ? dataSourceTypes.find((type) => type.value === newSource.type)?.label
+                            : "Select type..."}
+                          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-[300px] p-0">
+                        <Command>
+                          <CommandInput placeholder="Search type..." />
+                          <CommandEmpty>No type found.</CommandEmpty>
+                          <CommandGroup>
+                            <CommandList className="max-h-[300px]">
+                              {dataSourceTypes.map((type) => (
+                                <CommandItem
+                                  key={type.value}
+                                  onSelect={() => {
+                                    setNewSource({ ...newSource, type: type.value })
+                                    setOpen(false)
+                                  }}
+                                >
+                                  <Check
+                                    className={cn(
+                                      "mr-2 h-4 w-4",
+                                      newSource.type === type.value ? "opacity-100" : "opacity-0"
+                                    )}
+                                  />
+                                  {type.label}
+                                </CommandItem>
+                              ))}
+                            </CommandList>
                           </CommandGroup>
-                        </CommandList>
-                      </Command>
-                    </PopoverContent>
-                  </Popover>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
+                  </div>
                 </div>
-                <Button onClick={handleCreateSource} className="w-full bg-[#6366f1] hover:bg-[#4f46e5]">
-                  Add Source
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="connector" className="text-right">
+                    Connection URL
+                  </Label>
+                  <Input
+                    id="connector"
+                    value={newSource.connector}
+                    onChange={(e) => setNewSource({ ...newSource, connector: e.target.value })}
+                    className="col-span-3"
+                    placeholder="mongodb://localhost:27017"
+                  />
+                </div>
+              </div>
+              <div className="flex justify-end">
+                <Button onClick={handleCreateSource} className="bg-[#4F46E5] hover:bg-[#4338CA]">
+                  Create
                 </Button>
               </div>
             </DialogContent>
@@ -317,108 +342,85 @@ export default function DataSourcesPage() {
         </div>
       </div>
 
-      <div className="space-y-6">
-        {dataSourceGroups.map((group) => {
-          const groupStatus = getGroupStatus(group.sources)
-
-          return (
-            <div key={group.type} className="border rounded-lg overflow-hidden shadow-sm">
-              {/* Group Header */}
-              <div
-                className="flex items-center justify-between cursor-pointer p-4 bg-background hover:bg-muted/50 transition-colors"
-                onClick={() => toggleGroup(group.type)}
-              >
-                <div className="flex items-center gap-3">
-                  <div className="bg-secondary rounded-md p-1.5">
-                    {group.isOpen ? (
-                      <ChevronDown className="h-4 w-4 text-foreground" />
-                    ) : (
-                      <ChevronRight className="h-4 w-4 text-foreground" />
-                    )}
-                  </div>
-                  <h2 className="text-lg font-medium">{group.type}</h2>
-                  <Badge variant={getStatusBadgeVariant(groupStatus as DataSource["status"])} className="ml-2">
-                    {getStatusText(groupStatus as DataSource["status"])}
-                  </Badge>
-                  <span className="text-sm text-muted-foreground ml-2">
-                    {group.sources.length} connection{group.sources.length !== 1 ? "s" : ""}
-                  </span>
-                </div>
+      <div className="grid gap-4">
+        {dataSourceGroups.map((group) => (
+          <Card key={group.type} className="border-gray-200 shadow-sm">
+            <div
+              className="flex items-center justify-between px-4 py-3 border-b border-gray-100 cursor-pointer"
+              onClick={() => toggleGroup(group.type)}
+            >
+              <div className="flex items-center space-x-2">
+                <Button variant="ghost" size="icon" className="h-8 w-8 p-0">
+                  {group.isOpen ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                </Button>
+                <span className="font-medium">{group.type}</span>
+                <Badge variant={getStatusBadgeVariant(getGroupStatus(group.sources)) as any}>
+                  {getStatusText(getGroupStatus(group.sources))}
+                </Badge>
               </div>
-
-              {/* Group Content */}
-              <div className={cn("p-4 space-y-4 bg-background", !group.isOpen && "hidden")}>
-                {group.sources.map((source) => (
-                  <Card
-                    key={source.id}
-                    className="overflow-hidden border border-border/40 bg-white dark:bg-gray-900 hover:border-border transition-colors"
-                  >
-                    <CardContent className="p-4">
-                      <div className="flex items-center justify-between">
-                        {/* Left section: Icon and source details */}
-                        <div className="flex items-start gap-4">
-                          <div className="p-2 bg-secondary rounded-lg mt-1">
-                            <Database className="h-5 w-5 text-foreground" />
-                          </div>
-                          <div>
-                            <div className="flex items-center gap-3 mb-1">
-                              <h2 className="text-lg font-medium">{source.name}</h2>
-                              <Badge variant={getStatusBadgeVariant(source.status)} className="whitespace-nowrap">
-                                {getStatusText(source.status)}
-                              </Badge>
-                            </div>
-                            <p className="text-sm text-muted-foreground">
-                              {source.recordCount.toLocaleString()} records
-                            </p>
-                            {source.status === "error" && source.error && (
-                              <p className="mt-1 text-sm text-destructive">Error: {source.error}</p>
-                            )}
-                          </div>
-                        </div>
-
-                        {/* Right section: Sync info and actions */}
-                        <div className="flex items-center gap-3">
-                          <div className="flex flex-col items-end text-sm text-muted-foreground">
-                            <div>Updated {source.lastSync.timestamp}</div>
-                            <div>Duration: {source.lastSync.duration}</div>
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-8 w-8"
-                              onClick={() => handleSync(source.id)}
-                              disabled={source.status === "syncing"}
-                            >
-                              <RefreshCcw className="h-4 w-4" />
-                              <span className="sr-only">Sync</span>
-                            </Button>
-                            <Button variant="ghost" size="icon" className="h-8 w-8">
-                              <Link2 className="h-4 w-4" />
-                              <span className="sr-only">View connection</span>
-                            </Button>
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="icon" className="h-8 w-8">
-                                  <MoreHorizontal className="h-4 w-4" />
-                                  <span className="sr-only">More options</span>
-                                </Button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end">
-                                <DropdownMenuItem>Edit connection</DropdownMenuItem>
-                                <DropdownMenuItem>View sync history</DropdownMenuItem>
-                                <DropdownMenuItem className="text-destructive">Remove source</DropdownMenuItem>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
-                          </div>
-                        </div>
-                      </CardContent>
-                  </Card>
-                ))}
-              </div>
+              <div className="text-sm text-gray-500">{group.sources.length} sources</div>
             </div>
-          )
-        })}
+
+            {group.isOpen && (
+              <CardContent className="p-0">
+                <div className="divide-y divide-gray-100">
+                  {group.sources.map((source) => (
+                    <div key={source.id} className="p-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center space-x-3">
+                          <Database className="h-5 w-5 text-gray-500" />
+                          <div>
+                            <h3 className="font-medium">{source.name}</h3>
+                            <div className="text-sm text-gray-500">
+                              {source.recordCount.toLocaleString()} records
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Badge variant={getStatusBadgeVariant(source.status) as any}>
+                            {getStatusText(source.status)}
+                          </Badge>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8"
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              handleSync(source.id)
+                            }}
+                          >
+                            <RefreshCcw className="h-4 w-4" />
+                          </Button>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="icon" className="h-8 w-8">
+                                <MoreHorizontal className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem>
+                                <Link2 className="h-4 w-4 mr-2" />
+                                <span>View connection</span>
+                              </DropdownMenuItem>
+                              <DropdownMenuItem>
+                                <RefreshCcw className="h-4 w-4 mr-2" />
+                                <span>Sync now</span>
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
+                      </div>
+                      <div className="text-sm text-gray-500">
+                        Last synced: {source.lastSync.timestamp} ({source.lastSync.duration})
+                      </div>
+                      {source.error && <div className="text-sm text-red-500 mt-1">Error: {source.error}</div>}
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            )}
+          </Card>
+        ))}
       </div>
     </DashboardLayout>
   )
