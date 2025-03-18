@@ -1,0 +1,49 @@
+{
+    "name": "REST API Connector Template",
+    "description": "Template for REST API based data connectors",
+    "version": "1.0.0",
+    "author": "Connector Management Agent",
+    "template_files": [
+        "connector_template.py"
+    ],
+    "required_variables": [
+        "connector_name",
+        "connector_class_name",
+        "api_name",
+        "api_base_url",
+        "auth_type",
+        "rate_limit",
+        "test_endpoint",
+        "entity_endpoint_base",
+        "id_field"
+    ],
+    "optional_variables": [
+        "oauth_config",
+        "date_created",
+        "author"
+    ],
+    "auth_types": [
+        "oauth2",
+        "api_key",
+        "basic_auth",
+        "custom"
+    ],
+    "default_rate_limit": 1.0,
+    "default_test_endpoint": "status",
+    "default_entity_endpoint_base": "v1",
+    "default_id_field": "id",
+    "scaffold_structure": [
+        {
+            "path": "{connector_name}_connector/{connector_name}_connector.py",
+            "template": "connector_template.py"
+        },
+        {
+            "path": "{connector_name}_connector/__init__.py",
+            "content": "\"\"\"Connector for {api_name} API.\"\"\"\n\nfrom .{connector_name}_connector import {connector_class_name}\n\n__all__ = [\"{connector_class_name}\"]\n"
+        },
+        {
+            "path": "{connector_name}_connector/README.md",
+            "content": "# {api_name} Connector\n\nConnector for integrating with the {api_name} API.\n\nCreated: {date_created}\nAuthor: {author}\n\n## Authentication\n\nThis connector uses {auth_type} authentication.\n\n## Data Types\n\nThis connector supports extracting the following entity types:\n\n- Users\n- Organizations\n- Activities\n\n## Configuration\n\nExample configuration:\n\n```json\n{\n    \"entity_types\": [\"users\", \"organizations\"],\n    \"page_size\": 100,\n    \"max_retries\": 3\n}\n```\n"
+        }
+    ]
+} 
